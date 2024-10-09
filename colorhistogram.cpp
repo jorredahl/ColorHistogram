@@ -1,5 +1,6 @@
 #include "colorhistogram.h"
 #include "imageviewer.h"
+#include "mousablelabel.h"
 
 #include <QtWidgets>
 
@@ -15,7 +16,12 @@ ColorHistogram::ColorHistogram(QImage newImage) {
     layout->addWidget(imageViewer);
     layout->addLayout(histo);
 
-    histo->addWidget(new QLabel("Presence of Colors in the Image"), 0, Qt::AlignCenter);
+    QHBoxLayout *topLayout = new QHBoxLayout();
+    colorClicked = new QLabel();
+    colorClicked->setPixmap(QPixmap(16,16));
+    topLayout->addWidget(new QLabel("Presence of Colors in the Image"), 0, Qt::AlignRight);
+    topLayout->addWidget(colorClicked, 0, Qt::AlignRight);
+    histo->addLayout(topLayout);
 
     QHBoxLayout *xAxisLabels = new QHBoxLayout();
     QVBoxLayout *yAxisLabels = new QVBoxLayout();
@@ -29,8 +35,9 @@ ColorHistogram::ColorHistogram(QImage newImage) {
     yAxisLabels->addWidget(new QLabel("255"), 0, Qt::AlignBottom);
 
     QHBoxLayout *chartLayout = new QHBoxLayout;
-    chart = new QLabel();
+    chart = new MousableLabel();
     chart->setPixmap(slices[0]);
+    connect(chart, &MousableLabel::mouseClicked, this, &ColorHistogram::mouseClicked);
     chartLayout->addLayout(yAxisLabels);
     chartLayout->addWidget(chart, 0, Qt::AlignCenter);
     histo->addLayout(chartLayout);
@@ -128,4 +135,21 @@ void ColorHistogram::changeColor() {
 void ColorHistogram::sliderMoved(int x) {
     chart->setPixmap(slices[x]);
     sliderLabel->setText("Choose " + colors->currentText() + " Value: " + QString::number(x));
+}
+
+void ColorHistogram::mouseClicked(QPoint pos) {
+    QImage tempImage(16, 16, QImage::Format_RGB32);
+    if (colors->currentText() == "Red") {
+        QPixmap temp(16,16);
+        temp.fill(QColor(slider->value(), pos.x(), pos.y()));
+        colorClicked->setPixmap(temp);
+    } else if (colors->currentText() == "Green") {
+        QPixmap temp(16,16);
+        temp.fill(QColor(pos.x(), slider->value(), pos.y()));
+        colorClicked->setPixmap(temp);
+    } else if (colors->currentText() == "Blue") {
+        QPixmap temp(16,16);
+        temp.fill(QColor(pos.x(), pos.y(), slider->value()));
+        colorClicked->setPixmap(temp);
+    }
 }

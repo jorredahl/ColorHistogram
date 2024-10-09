@@ -12,12 +12,14 @@ SOURCES += \
     colorhistogram.cpp \
     imageviewer.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    mousablelabel.cpp
 
 HEADERS += \
     colorhistogram.h \
     imageviewer.h \
-    mainwindow.h
+    mainwindow.h \
+    mousablelabel.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
